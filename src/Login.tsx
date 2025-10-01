@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+interface LoginResponse {
+  token: string;
+  rol: string;
+  username: string;
+}
 
 function Login() {
-  const [username, setUsuario] = useState('');
-  const [password, setContrasena] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [username, setUsuario] = useState<string>('');
+  const [password, setContrasena] = useState<string>('');
+  const [mensaje, setMensaje] = useState<string>('');
 
-  const handleLogin = async (e) => {
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -14,30 +23,38 @@ function Login() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          username,
-          password
-        })
+        body: JSON.stringify({ username, password })
       });
 
       if (respuesta.ok) {
-        const datos = await respuesta.json();
+        const datos: LoginResponse = await respuesta.json();
         const token = datos.token;
+        const rol = datos.rol;
+        const username = datos.username;
 
         localStorage.setItem('token', token);
         console.log('Login exitoso:', datos);
+       
+        if( rol === 'ADMIN'){
+            navigate('/uploadFile');
+        }else {
+            navigate('/locationskus')
+        }
+        
+
         setMensaje('✅ Bienvenido');
       } else {
         const error = await respuesta.text();
         setMensaje(`❌ Error: ${error}`);
       }
     } catch (err) {
-      setMensaje(`❌ Error de red: ${err.message}`);
+      const error = err as Error; // Forzamos a que `err` sea del tipo `Error`
+      setMensaje(`❌ Error de red: ${error.message}`);
     }
   };
 
   return (
-    <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2>Iniciar sesión</h2>
       <form onSubmit={handleLogin}>
         <input
