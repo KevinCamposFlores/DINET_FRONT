@@ -1,6 +1,8 @@
 import { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+
 function UploadFiles() {
   const [file1, setFile1] = useState<File | null>(null);
   const [file2, setFile2] = useState<File | null>(null);
@@ -25,7 +27,19 @@ function UploadFiles() {
   };
 
    const procesar = async() => {
-    navigate('/locationskus');
+    //  navigate('/locationskus');
+      
+     let url: string = '';
+         url = 'http://localhost:8090/mdirectiva/ordenarskus';
+
+     const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+
    }
 
   const uploadFile = async (file: File | null, index: number) => {
