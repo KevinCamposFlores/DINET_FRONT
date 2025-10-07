@@ -7,7 +7,9 @@ function UploadFiles() {
   const [file1, setFile1] = useState<File | null>(null);
   const [file2, setFile2] = useState<File | null>(null);
   const [file3, setFile3] = useState<File | null>(null);
+  const [file4, setFile4] = useState<File | null>(null);
   const [tipoarchivo, setTipoarchivo] = useState<string>('');
+  
 
   const [enabledInputs, setEnabledInputs] = useState<boolean[]>([true, false, false]);
   
@@ -24,6 +26,7 @@ function UploadFiles() {
     if (index === 0) setFile1(file);
     if (index === 1) setFile2(file);
     if (index === 2) setFile3(file);
+    if (index === 3) setFile4(file);
   };
 
    const procesar = async() => {
@@ -61,10 +64,12 @@ function UploadFiles() {
       if (index === 0) {
         url = 'http://localhost:8090/ubicaciones/upload';
       } else if (index === 1) {
-        url = 'http://localhost:8090/mproducto/upload';
+        url = 'http://localhost:8090/productoObservado/upload';
       } else if (index === 2) {
-        url = 'http://localhost:8090/mdirectiva/upload';
-      }
+        url =  'http://localhost:8090/mproducto/upload';
+      } else if (index === 3){
+        url =  'http://localhost:8090/mdirectiva/upload'; 
+       } 
 
       const response = await fetch(url, {
         method: 'POST',
@@ -85,7 +90,7 @@ function UploadFiles() {
       setMensaje(`✅ Archivo ${index + 1} subido con éxito!`);
 
       // Habilitar siguiente input si no es el último
-      if (index < 2) {
+      if (index < 3) {
         const newEnabled = [...enabledInputs];
         newEnabled[index + 1] = true;
         setEnabledInputs(newEnabled);
@@ -112,8 +117,9 @@ function UploadFiles() {
         </button>
       </div>
 
-      <div>
-        <h4>Cargar Maestro de Productos:</h4>
+    
+     <div>
+        <h4>Cargar Productos Observados:</h4>
         <input
           type="file"
           accept=".xlsx, .xls"
@@ -124,9 +130,9 @@ function UploadFiles() {
           Subir Archivo
         </button>
       </div>
-
+    
       <div>
-        <h4>Cargar Directiva:</h4>
+        <h4>Cargar Maestro de Productos:</h4>
         <input
           type="file"
           accept=".xlsx, .xls"
@@ -134,6 +140,20 @@ function UploadFiles() {
           onChange={(e) => handleFileChange(e, 2)}
         />
         <button onClick={() => uploadFile(file3, 2)} disabled={!file3 || !enabledInputs[2]}>
+          Subir Archivo
+        </button>
+      </div>
+
+     
+      <div>
+        <h4>Cargar Directiva:</h4>
+        <input
+          type="file"
+          accept=".xlsx, .xls"
+          disabled={!enabledInputs[3]}
+          onChange={(e) => handleFileChange(e, 3)}
+        />
+        <button onClick={() => uploadFile(file4, 3)} disabled={!file4 || !enabledInputs[3]}>
           Subir Archivo
         </button>
       </div>
