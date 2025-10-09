@@ -34,6 +34,9 @@ function UploadFiles() {
       
      let url: string = '';
          url = 'http://localhost:8090/mdirectiva/ordenarskus';
+     
+     console.log("Verificar si hay token")
+     console.log(token)
 
      const response = await fetch(url, {
         method: 'POST',
