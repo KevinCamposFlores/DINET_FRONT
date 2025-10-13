@@ -30,7 +30,7 @@ function UploadFiles() {
   };
 
    const procesar = async() => {
-    //  navigate('/locationskus');
+  //  navigate('/locationskus');
       
      let url: string = '';
          url = 'http://localhost:8090/mdirectiva/ordenarskus';
@@ -43,7 +43,7 @@ function UploadFiles() {
         headers: {
           Authorization: `Bearer ${token}`,
         }
-      });
+      }); 
 
 
    }
