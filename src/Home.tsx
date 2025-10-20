@@ -1,7 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Home(){
-   
+    
+    const navigate = useNavigate();
+    
+    const navigateUploadFile = () => {
+      navigate("/uploadFile")
+    }
+    
+
+
+
     const [sku, setSku] = useState("");
 
     return  (
@@ -30,7 +40,7 @@ function Home(){
           </button>
         </div>
 
-        <button className="w-full btn btn-secondary">CARGAR ARCHIVOS</button>
+        <button onClick={navigateUploadFile} className="w-full btn btn-secondary">CARGAR ARCHIVOS</button>
 
         <div className="flex justify-end pt-8">
           <button className="btn btn-outline">SALIR</button>

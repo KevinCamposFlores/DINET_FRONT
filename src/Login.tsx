@@ -36,7 +36,7 @@ function Login() {
         console.log('Login exitoso:', datos);
        
         if( rol === 'ADMIN'){
-            navigate('/uploadFile');
+            navigate('/home');
         }else {
             navigate('/locationskus')
         }
