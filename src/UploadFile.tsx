@@ -29,9 +29,14 @@ function UploadFiles() {
     if (index === 3) setFile4(file);
   };
 
+
+  
    const procesar = async() => {
   //  navigate('/locationskus');
-      
+    try{   
+  setMensaje(`Procesando Ubicaciones...`);
+
+
      let url: string = '';
          url = 'http://localhost:8090/mdirectiva/ordenarskus';
      
@@ -44,9 +49,14 @@ function UploadFiles() {
           Authorization: `Bearer ${token}`,
         }
       }); 
+  
+      setMensaje(`✅ Ubicaciones Procesadas correctamente`);
 
-
-   }
+   } 
+   catch(err){
+     const error = err as Error;
+      setMensaje(`❌ Error al Procesar Ubicaciones: ${error.message}`);
+   }};
 
   const uploadFile = async (file: File | null, index: number) => {
     if (!file) {
