@@ -1,18 +1,79 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState } from "react";
+import { data, useNavigate } from "react-router-dom";
 
 function Home(){
-    
+      interface skuposicion {
+     id: number,
+     sku: string,
+     perfil : string,
+     encargado : string,
+     cantidad : number,
+     familia : string,
+     posicion : string,
+     process_id : number,
+     estado : string
+      }
+ 
+    let url : string = '';
+     const token = localStorage.getItem('token');
+  
+
+    const [sku, setSku] = useState<string>('');
     const navigate = useNavigate();
-    
+   // const [resultado, setResultado] = useState<skuposicion | null>(null)
+    const [error, setError] = useState<string | null>(null)
+
+    const navigatelocationskus = async() => {
+    //url =  `http://localhost:8090/skuposicion/almacenarSku${encodeURIComponent(sku)}`
+      url =  `http://localhost:8090/skuposicion/almacenarSku/${encodeURIComponent(sku)}`
+      
+    console.log("TOKEN PARA EL BUSCAR SKU: "+token); 
+
+      if(!sku.trim()){
+        setError("Por favor ingrese un SKU para almacenar")
+        return;
+      }
+
+      setError(null);
+   
+
+      try {
+        const response  =  await fetch(url,{
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        if(!response.ok){
+         throw new Error("SKU no encontrado")
+        }
+         const data : skuposicion  = await response.json();
+         navigate('/LocationSkus', {state: data})
+         
+      }
+      catch (err){
+      setError((err as Error).message)
+      } 
+      finally {
+
+      }
+
+     
+    }
+
+
     const navigateUploadFile = () => {
       navigate("/uploadFile")
     }
     
-
-
-
-    const [sku, setSku] = useState("");
+    const navigatestorereport = () => {
+      navigate("/StoreReport")
+    }
+   
+    const navigatestoreproducts = () => {
+      navigate("/StoreProducts")
+    }
 
     return  (
      <div className="dark:bg-background-dark bg-background-light font-display text-white flex flex-col h-screen justify-center items-center p-6">
@@ -32,10 +93,10 @@ function Home(){
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button className="btn btn-primary col-span-1 sm:col-span-1">
+          <button onClick={navigatelocationskus}  className="btn btn-primary col-span-1 sm:col-span-1">
             ALMACENAR
           </button>
-          <button className="btn btn-secondary col-span-1 sm:col-span-2">
+          <button onClick={navigatestorereport} className="btn btn-secondary col-span-1 sm:col-span-2">
             REPORTE DE ALMACENAJE
           </button>
         </div>
@@ -45,6 +106,11 @@ function Home(){
         <div className="flex justify-end pt-8">
           <button className="btn btn-outline">SALIR</button>
         </div>
+         {error && (
+      <p className="text-center text-sm text-gray-700 bg-gray-100 rounded-md py-2">
+        {error}
+      </p>
+    )}
       </div>
     </div> )
 }

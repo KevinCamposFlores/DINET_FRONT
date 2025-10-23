@@ -1,7 +1,79 @@
+import { useEffect, useState } from 'react';
+import  {data, useLocation} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 function LocationSkus() {
-return (
-<div>
+
+
+   interface skuposicion {
+     id: number,
+     sku: string,
+     perfil : string,
+     encargado : string,
+     cantidad : number,
+     familia : string,
+     posicion : string,
+     process_id : number,
+     estado : string
+      }
+
+
+ const location = useLocation();
+ const navigate = useNavigate();
+const datarecibida: skuposicion =  location.state
+const [id, setId] = useState<Number>(0)
+const [sku, setSku] = useState<string>("")
+const [perfil, setPerfil] = useState<string>("")
+const [encargado, setEncargado] = useState<string>("")
+const [cantidad, setCantidad] = useState<Number>(0)
+const [familia, setFamilia] = useState<string>("")
+const [posicion, setPosicion] = useState<string>("")
+const [process_id, setProcess] = useState<Number>(0)
+const [estado, setEstado] = useState<string>("")
+const [mensaje, setMensaje] = useState<string>("")
+
+useEffect(()=> {
+  if(datarecibida?.sku) {
+    console.log("aqui esta la data recibida" + datarecibida.sku)
+    
+    setId(datarecibida.id)
+    setSku(datarecibida.sku)
+    setPerfil(datarecibida.perfil)
+    setEncargado(datarecibida.encargado)
+    setCantidad(datarecibida.cantidad)
+    setFamilia(datarecibida.familia)
+    setPosicion(datarecibida.posicion)
+    setProcess(datarecibida.process_id)
+    setEstado(datarecibida.estado)
+  }
+}, [datarecibida])
+
+const botonconfirmar = ()  => {
+
+  if(estado === 'ALMACENADO'){
+   setMensaje("El SKU YA SE ENCUENTRA ALMACENADO")
+  }
+  else{
+     almacenarsku();
+  }
+
+}
+
+const almacenarsku = () => {
+
+  setMensaje("EL SKU SE ALMACENO CORRECTAMENTE")
+}
+
+const volverhome = () => {
+  navigate('/Home')
+}
+
+
+
+
+  return (
+   
+<div className="dark:bg-background-dark bg-background-light font-display flex justify-center items-center min-h-screen">
 <div className="flex items-center justify-center min-h-screen">
 <main className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 max-w-6xl w-full">
 <div className="flex flex-col items-center justify-center bg-background-dark/50 dark:bg-background-light/5 p-6 rounded-lg">
@@ -14,19 +86,28 @@ return (
 </div>
 <div className="flex flex-col justify-center space-y-6">
 <div className="space-y-4">
-<input className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="SKU" type="text"/>
-<input className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="CATEGORÍA" type="text"/>
-<input className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="ZONA" type="text"/>
-<input className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="UBICACIÓN" type="text"/>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">SKU: {sku}</p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">PERFIL: {perfil}</p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" >ENCARGADO: {encargado}</p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">CANTIDAD: {cantidad.toString()} </p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">FAMILIA: {familia}</p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">POSICION: {posicion} </p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">ESTADO: {estado} </p>
+
 </div>
 <div className="flex flex-col space-y-3">
-<button className="w-full bg-primary text-white rounded-lg h-12 text-center font-bold hover:bg-primary/90 transition-colors">
+<button onClick={almacenarsku} className="w-full bg-primary text-white rounded-lg h-12 text-center font-bold hover:bg-primary/90 transition-colors">
             Confirmar
           </button>
-<button className="w-full bg-transparent border border-black/20 dark:border-white/20 text-black dark:text-white rounded-lg h-12 text-center font-bold hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<button onClick={volverhome} className="w-full bg-transparent border border-black/20 dark:border-white/20 text-black dark:text-white rounded-lg h-12 text-center font-bold hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
             Salir
           </button>
 </div>
+ {mensaje && (
+      <p className="text-center text-sm text-gray-700 bg-gray-100 rounded-md py-2">
+        {mensaje}
+      </p>
+    )}
 </div>
 </main>
 </div>

@@ -28,7 +28,10 @@ function UploadFiles() {
     if (index === 2) setFile3(file);
     if (index === 3) setFile4(file);
   };
-
+   
+   const volverhome = () => {
+  navigate('/Home')
+}
 
   
    const procesar = async() => {
@@ -211,7 +214,7 @@ function UploadFiles() {
     </div>
 
     {/* Procesar */}
-    <div className="pt-4">
+    <div className="flex flex-col space-y-3">
       <button
         onClick={() => procesar()}
         className="w-full py-3 bg-green-600 text-white font-semibold rounded-md
@@ -219,6 +222,8 @@ function UploadFiles() {
       >
         Procesar Ubicaciones
       </button>
+      <button onClick={volverhome}  className="w-full py-3 bg-transparent text-white font-semibold rounded-md
+                    transition disabled:opacity-50 border border-black/20 dark:border-white/20 text-black dark:text-white">Volver</button>
     </div>
 
     {/* Mensaje */}
