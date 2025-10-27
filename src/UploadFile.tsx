@@ -8,12 +8,14 @@ function UploadFiles() {
   const [file2, setFile2] = useState<File | null>(null);
   const [file3, setFile3] = useState<File | null>(null);
   const [file4, setFile4] = useState<File | null>(null);
+  const [file5, setFile5] = useState<File | null>(null);
   const [tipoarchivo, setTipoarchivo] = useState<string>('');
-  
+  const [visible, setVisible] = useState(false)
+  const [tipo, setTipo] = useState<TipoMensaje>("success");
 
   const [enabledInputs, setEnabledInputs] = useState<boolean[]>([true, false, false]);
   
-  const [mensaje, setMensaje] = useState<string>('');
+  const [mensaje, setMensaje] = useState<string | null>(null);
 
   const token = localStorage.getItem('token');
 
@@ -27,6 +29,7 @@ function UploadFiles() {
     if (index === 1) setFile2(file);
     if (index === 2) setFile3(file);
     if (index === 3) setFile4(file);
+    if (index === 4) setFile5(file);
   };
    
    const volverhome = () => {
@@ -37,7 +40,8 @@ function UploadFiles() {
    const procesar = async() => {
   //  navigate('/locationskus');
     try{   
-  setMensaje(`Procesando Ubicaciones...`);
+  //setMensaje(`Procesando Ubicaciones...`);
+  mostrarMensaje(`Procesando Ubicaciones...`, 'success')
 
 
      let url: string = '';
@@ -53,24 +57,46 @@ function UploadFiles() {
         }
       }); 
   
-      setMensaje(`✅ Ubicaciones Procesadas correctamente`);
+     // setMensaje(`✅ Ubicaciones Procesadas correctamente`);
+      mostrarMensaje(`✅ Ubicaciones Procesadas correctamente`, 'success')
 
    } 
    catch(err){
      const error = err as Error;
-      setMensaje(`❌ Error al Procesar Ubicaciones: ${error.message}`);
+     
+     // setMensaje(`❌ Error al Procesar Ubicaciones: ${error.message}`);
+      mostrarMensaje(`❌ Error al Procesar Ubicaciones: ${error.message}`, 'error')
    }};
 
+
+   //METODO PARA MENSAJES
+   type TipoMensaje = "success" | "error" | "warning";
+
+   const mostrarMensaje  = (texto :string, tipo: TipoMensaje = "success") => {
+    setMensaje(texto);
+    setTipo(tipo);
+    setVisible(true);
+
+      // Ocultar después de 3 segundos
+    setTimeout(() => {
+      setVisible(false);
+      // limpiar el mensaje luego de la animación
+      setTimeout(() => setMensaje(null), 500);
+    }, 3000);
+  }
+
+ 
+//METODO PARA EL BOTON CARGAR ARCHIVOS
   const uploadFile = async (file: File | null, index: number) => {
     if (!file) {
-      setMensaje('No hay archivo para subir');
+      mostrarMensaje('No hay archivo para subir', 'warning')
+     // setMensaje('No hay archivo para subir');
       return;
     }
-
-  
-
     try {
-      setMensaje(`Subiendo archivo ${index + 1}...`);
+
+      mostrarMensaje(`Subiendo archivo ${index + 1}...`, 'success')
+    //  setMensaje(`Subiendo archivo ${index + 1}...`);
       const formData = new FormData();
       formData.append('file', file);
 
@@ -82,10 +108,12 @@ function UploadFiles() {
       } else if (index === 1) {
         url = 'http://localhost:8090/productoObservado/upload';
       } else if (index === 2) {
-        url =  'http://localhost:8090/mproducto/upload';
+        url =  'http://localhost:8090/users/upload';
       } else if (index === 3){
-        url =  'http://localhost:8090/mdirectiva/upload'; 
-       } 
+        url =  'http://localhost:8090/mproducto/upload'; 
+      } else if (index === 4) {
+        url = 'http://localhost:8090/mdirectiva/upload'; 
+       }
 
       const response = await fetch(url, {
         method: 'POST',
@@ -102,18 +130,19 @@ function UploadFiles() {
       } */
       console.log(token)
       console.log(responseText);
-
-      setMensaje(`✅ Archivo ${index + 1} subido con éxito!`);
+      mostrarMensaje(`✅ Archivo ${index + 1} subido con éxito!`, 'success')
+     // setMensaje(`✅ Archivo ${index + 1} subido con éxito!`);
 
       // Habilitar siguiente input si no es el último
-      if (index < 3) {
+      if (index < 4) {
         const newEnabled = [...enabledInputs];
         newEnabled[index + 1] = true;
         setEnabledInputs(newEnabled);
       }
     } catch (err) {
       const error = err as Error;
-      setMensaje(`❌ Error al subir archivo ${index + 1}: ${error.message}`);
+      mostrarMensaje(`❌ Error al subir archivo ${index + 1}: ${error.message}`, 'error')
+     // setMensaje(`❌ Error al subir archivo ${index + 1}: ${error.message}`);
     }
   };
 
@@ -121,6 +150,25 @@ function UploadFiles() {
      <div className="dark:bg-background-dark bg-background-light font-display flex justify-center items-center min-h-screen"> 
    <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center dark:bg-background-dark  bg-background-light border-white/20 dark:border-white/10 rounded-xl shadow-lg">
   <div className="w-full max-w-md space-y-6 dark:bg-background-dark shadow-md rounded-lg p-6  bg-background-light border-white/20 dark:border-white/10 rounded-xl shadow-lg">
+   
+    {/* Mensaje tipo toast */}
+ {mensaje && (
+  <div
+    className={`fixed top-5 right-5 px-6 py-3 rounded-lg border shadow-md transition-all duration-500 ease-in-out
+      ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
+      ${
+        tipo === "success"
+          ? "bg-green-100 border-green-400 text-green-800"
+          : tipo === "error"
+          ? "bg-red-100 border-red-400 text-red-800"
+          : "bg-yellow-100 border-yellow-400 text-yellow-800"
+      }`}
+  >
+    {mensaje}
+  </div>
+)}
+  
+   
     {/* Cargar Ubicaciones */}
     <div className="space-y-2">
       <h4 className="text-lg font-semibold text-gray-800">Cargar Ubicaciones:</h4>
@@ -143,6 +191,8 @@ function UploadFiles() {
         Subir Archivo
       </button>
     </div>
+
+
 
     {/* Cargar Productos Observados */}
     <div className="space-y-2">
@@ -167,9 +217,9 @@ function UploadFiles() {
       </button>
     </div>
 
-    {/* Cargar Maestro de Productos */}
+   {/* Cargar Maestro de Usuarios */}
     <div className="space-y-2">
-      <h4 className="text-lg font-semibold text-gray-800">Cargar Maestro de Productos:</h4>
+      <h4 className="text-lg font-semibold text-gray-800">Cargar de Operarios Activos:</h4>
       <input
         type="file"
         accept=".xlsx, .xls"
@@ -190,9 +240,10 @@ function UploadFiles() {
       </button>
     </div>
 
-    {/* Cargar Directiva */}
+
+    {/* Cargar Maestro de Productos */}
     <div className="space-y-2">
-      <h4 className="text-lg font-semibold text-gray-800">Cargar Directiva:</h4>
+      <h4 className="text-lg font-semibold text-gray-800">Cargar Maestro de Productos:</h4>
       <input
         type="file"
         accept=".xlsx, .xls"
@@ -213,6 +264,29 @@ function UploadFiles() {
       </button>
     </div>
 
+    {/* Cargar Directiva */}
+    <div className="space-y-2">
+      <h4 className="text-lg font-semibold text-gray-800">Cargar Directiva:</h4>
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        disabled={!enabledInputs[4]}
+        onChange={(e) => handleFileChange(e, 4)}
+        className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 
+                   file:rounded-md file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                   disabled:opacity-50 disabled:cursor-not-allowed"
+      />
+      <button
+        onClick={() => uploadFile(file5, 4)}
+        disabled={!file5 || !enabledInputs[4]}
+        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md 
+                   hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Subir Archivo
+      </button>
+    </div>
+
     {/* Procesar */}
     <div className="flex flex-col space-y-3">
       <button
@@ -225,13 +299,6 @@ function UploadFiles() {
       <button onClick={volverhome}  className="w-full py-3 bg-transparent text-white font-semibold rounded-md
                     transition disabled:opacity-50 border border-black/20 dark:border-white/20 text-black dark:text-white">Volver</button>
     </div>
-
-    {/* Mensaje */}
-    {mensaje && (
-      <p className="text-center text-sm text-gray-700 bg-gray-100 rounded-md py-2">
-        {mensaje}
-      </p>
-    )}
   </div>
 </div>
 </div>
