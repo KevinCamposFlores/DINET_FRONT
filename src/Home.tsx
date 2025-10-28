@@ -2,6 +2,27 @@ import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState } f
 import { data, useNavigate } from "react-router-dom";
 
 function Home(){
+
+  //METODO PARA MENSAJES
+   type TipoMensaje = "success" | "error" | "warning";
+   const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
+   const [visible, setVisible] = useState(false)
+   const [tipo, setTipo] = useState<TipoMensaje>("success");
+   const [mensaje, setMensaje] = useState<string | null>(null);
+
+   const mostrarMensaje  = (texto :string, tipo: TipoMensaje = "success") => {
+    setMensaje(texto);
+    setTipo(tipo);
+    setVisible(true);
+
+      // Ocultar después de 3 segundos
+    setTimeout(() => {
+      setVisible(false);
+      // limpiar el mensaje luego de la animación
+      setTimeout(() => setMensaje(null), 500);
+    }, 3000);
+  }
+
       interface skuposicion {
      id: number,
      sku: string,
@@ -27,7 +48,11 @@ function Home(){
     //url =  `http://localhost:8090/skuposicion/almacenarSku${encodeURIComponent(sku)}`
       url =  `http://localhost:8090/skuposicion/almacenarSku/${encodeURIComponent(sku)}`
       
-    console.log("TOKEN PARA EL BUSCAR SKU: "+token); 
+       
+     if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+     }
 
       if(!sku.trim()){
         setError("Por favor ingrese un SKU para almacenar")
@@ -64,20 +89,55 @@ function Home(){
 
 
     const navigateUploadFile = () => {
+        
+    if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
       navigate("/uploadFile")
     }
     
     const navigatestorereport = () => {
+    if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
       navigate("/StoreReport")
     }
    
     const navigatestoreproducts = () => {
+    if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
       navigate("/StoreProducts")
     }
 
     return  (
-     <div className="dark:bg-background-dark bg-background-light font-display text-white flex flex-col h-screen justify-center items-center p-6">
+  
+
+     <div className="dark:bg-background-dark bg-background-light font-display text-white flex flex-col h-screen justify-center items-center p-6">  
+     
+           {/* Mensaje tipo toast */}
+           {mensaje && (
+            <div
+              className={`fixed top-5 right-5 px-6 py-3 rounded-lg border shadow-md transition-all duration-500 ease-in-out
+              ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
+              ${
+              tipo === "success"
+               ? "bg-green-100 border-green-400 text-green-800"
+              : tipo === "error"
+              ? "bg-red-100 border-red-400 text-red-800"
+              : "bg-yellow-100 border-yellow-400 text-yellow-800"
+              }`}
+                >
+               {mensaje}
+              </div>
+                )}
+     
+     
       <div className="w-full max-w-lg space-y-8">
+        
         <div className="space-y-2">
           <label className="text-sm font-medium text-white/80" htmlFor="sku">
             SKU:

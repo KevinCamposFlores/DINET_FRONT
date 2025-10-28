@@ -21,6 +21,8 @@ function UploadFiles() {
 
   const navigate = useNavigate();
 
+  const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -33,12 +35,21 @@ function UploadFiles() {
   };
    
    const volverhome = () => {
+     if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
   navigate('/Home')
 }
 
   
    const procesar = async() => {
   //  navigate('/locationskus');
+ if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
+
     try{   
   //setMensaje(`Procesando Ubicaciones...`);
   mostrarMensaje(`Procesando Ubicaciones...`, 'success')
@@ -88,6 +99,12 @@ function UploadFiles() {
  
 //METODO PARA EL BOTON CARGAR ARCHIVOS
   const uploadFile = async (file: File | null, index: number) => {
+    
+    if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
+    
     if (!file) {
       mostrarMensaje('No hay archivo para subir', 'warning')
      // setMensaje('No hay archivo para subir');
@@ -96,11 +113,11 @@ function UploadFiles() {
     try {
 
       mostrarMensaje(`Subiendo archivo ${index + 1}...`, 'success')
-    //  setMensaje(`Subiendo archivo ${index + 1}...`);
+    
       const formData = new FormData();
       formData.append('file', file);
 
-      // Usamos una variable local en lugar de modificar el estado directamente
+    
       let url: string = '';
 
       if (index === 0) {
@@ -123,14 +140,18 @@ function UploadFiles() {
         body: formData,
       });
 
-      const responseText: string = await response.text();
+      //const responseText: string = await response.text();
+      
+      const data = await response.json();
 
-      /*if (!response.ok) {
-        throw new Error(responseText || 'Error en la subida');
-      } */
-      console.log(token)
-      console.log(responseText);
-      mostrarMensaje(`✅ Archivo ${index + 1} subido con éxito!`, 'success')
+      if (!response.ok) {
+        console.error('Error en la subida', data.error || data.mensaje)
+        mostrarMensaje(`❌ Error al subir el archivo ${index + 1}: ${data.error || data.mensaje} `, 'error')
+       return
+      } 
+      console.log('Token',token)
+      console.log('Respuesta', data)
+      mostrarMensaje(`✅ Archivo ${index + 1} subido con éxito: ${data.message}`, 'success')
      // setMensaje(`✅ Archivo ${index + 1} subido con éxito!`);
 
       // Habilitar siguiente input si no es el último

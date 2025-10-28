@@ -4,6 +4,31 @@ import { useNavigate } from "react-router-dom"
 function StoreReport (){
 
   const navigate = useNavigate();
+ const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
+   const token = localStorage.getItem('token');
+ type TipoMensaje = "success" | "error" | "warning";
+
+   const mostrarMensaje  = (texto :string, tipo: TipoMensaje = "success") => {
+   // setMensaje(texto);
+   // setTipo(tipo);
+   // setVisible(true);
+
+      // Ocultar después de 3 segundos
+    setTimeout(() => {
+     // setVisible(false);
+      // limpiar el mensaje luego de la animación
+    //  setTimeout(() => setMensaje(null), 500);
+    }, 3000);
+  }
+
+
+
+
+
+ if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
 
 
   const volverhome = () => {
