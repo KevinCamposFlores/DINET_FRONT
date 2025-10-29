@@ -36,7 +36,7 @@ localStorage.removeItem("token");
       backgroundColor: "#1e1e2f",
       color: "white"
     }}>
-      <h2>Mi Aplicación</h2>
+      <h2>My APP</h2>
       <button
         onClick={handleLogout}
         style={{

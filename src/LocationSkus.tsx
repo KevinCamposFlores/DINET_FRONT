@@ -5,6 +5,27 @@ import { useNavigate } from 'react-router-dom';
 
 function LocationSkus() {
  
+  //METODO PARA MENSAJES
+   type TipoMensaje = "success" | "error" | "warning";
+   const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
+   const [visible, setVisible] = useState(false)
+   const [tipo, setTipo] = useState<TipoMensaje>("success");
+   const [mensaje, setMensaje] = useState<string | null>(null);
+
+   const mostrarMensaje  = (texto :string, tipo: TipoMensaje = "success") => {
+    setMensaje(texto);
+    setTipo(tipo);
+    setVisible(true);
+
+      // Ocultar después de 3 segundos
+    setTimeout(() => {
+      setVisible(false);
+      // limpiar el mensaje luego de la animación
+      setTimeout(() => setMensaje(null), 500);
+    }, 3000);
+  }
+
+
 
    interface skuposicion {
      id: number,
@@ -31,12 +52,11 @@ const [familia, setFamilia] = useState<string>("")
 const [posicion, setPosicion] = useState<string>("")
 const [process_id, setProcess] = useState<Number>(0)
 const [estado, setEstado] = useState<string>("")
-const [mensaje, setMensaje] = useState<string>("")
+
 const [error, setError] = useState<string | null>(null)
 
 useEffect(()=> {
   if(datarecibida?.sku) {
-    console.log("aqui esta la data recibida" + datarecibida.sku)
     
     setId(datarecibida.id)
     setSku(datarecibida.sku)
@@ -53,8 +73,7 @@ useEffect(()=> {
 const botonconfirmar = ()  => {
 
   if(estado === 'ALMACENADO'){
-   setMensaje("El SKU YA SE ENCUENTRA ALMACENADO")
-
+    mostrarMensaje('El SKU YA SE ENCUENTRA ALMACENADO', 'warning')
   }
   else{
    // if(posicion === code){
@@ -72,8 +91,7 @@ const botonconfirmar = ()  => {
 
 const almacenarsku = async() => {
 
-
-  setMensaje("EL SKU SE ALMACENO CORRECTAMENTE")        
+ 
     url = `http://localhost:8090/skuposicion/actualizarestadoSKUALMACEN/${encodeURIComponent(sku)}`
     try {
 
@@ -85,20 +103,23 @@ const almacenarsku = async() => {
         });
 
         if(!response.ok){
-         throw new Error("SKU no encontrado")
+           const error = await response.json()
+            mostrarMensaje(error.error, 'error')
+            return
         }
-
-        setEstado('ALMACENADO');
+         
+        const data = await response.json()
+         mostrarMensaje(data.message, 'success')
+     
        //  const data : skuposicion  =  response.json();
       //   navigate('/LocationSkus', {state: data})
-      console.log(response.json.toString)
-        
+      
       }
       catch (err){
-      setError((err as Error).message)
+      
+      mostrarMensaje((err as Error).message, 'error')
       } 
-      finally {
-      }
+
 }
 
 const volverhome = () => {
@@ -147,6 +168,73 @@ const handleChange = (e: Event) => {
 <div className="flex flex-col items-center justify-center bg-background-dark/50 dark:bg-background-light/5 p-6 rounded-lg">
 <div className="w-full aspect-video bg-cover bg-center rounded-lg flex items-center justify-center">
 </div>
+ {/* Mensaje tipo toast */}
+          {mensaje && (
+  <div
+    className={`fixed top-5 right-5 flex items-center gap-3 px-5 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-500 ease-in-out
+      ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
+      ${
+        tipo === "success"
+          ? "bg-green-500"
+          : tipo === "error"
+          ? "bg-red-500"
+          : "bg-yellow-500"
+      }`}
+  >
+    {/* Ícono */}
+    {tipo === "success" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="white"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4 8l8 6 8-6M4 8v8a2 2 0 002 2h12a2 2 0 002-2V8m-16 0l8 6 8-6"
+        />
+      </svg>
+    )}
+    {tipo === "error" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="white"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    )}
+    {tipo === "warning" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="white"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v2m0 4h.01M12 19a7 7 0 100-14 7 7 0 000 14z"
+        />
+      </svg>
+    )}
+
+    {/* Mensaje */}
+    <span>{mensaje}</span>
+  </div>
+)}
 <div className="text-center mt-4">
 <h2 className="text-xl font-bold text-black dark:text-white">Previsualización del Producto</h2>
 <p className="text-black/60 dark:text-white/60">Datos del producto o previsualización aquí.</p>
@@ -171,11 +259,6 @@ const handleChange = (e: Event) => {
             Salir
           </button>
 </div>
- {mensaje && (
-      <p className="text-center text-sm text-gray-700 bg-gray-100 rounded-md py-2">
-        {mensaje}
-      </p>
-    )}
 </div>
 </main>
 </div>
