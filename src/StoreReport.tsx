@@ -2,76 +2,86 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"
 
 
-
 function StoreReport (){
 
-  const navigate = useNavigate();
- const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
-   const token = localStorage.getItem('token');
- type TipoMensaje = "success" | "error" | "warning";
+const navigate = useNavigate();
+const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
+const token = localStorage.getItem('token');
+type TipoMensaje = "success" | "error" | "warning";
 
-const [skus, setSkus] = useState([]);
+const [skus, setSkus] = useState<skuitem[]>([]);
 const [page, setPage] = useState(0);
 const [size, setSize] = useState(10);
 const [totalPages, setTotalPages] = useState(0);
 const [filters, setFilters] = useState({ sku: "", estado: "", zona: "" });
 
+const [visible, setVisible] = useState(false)
+const [tipo, setTipo] = useState<TipoMensaje>("success");
+const [mensaje, setMensaje] = useState<string | null>(null);
 
-useEffect(() => {
-  const params = new URLSearchParams({
-  /*  page,
-    size,
-    sku: filters.sku || "",
-    estado: filters.estado || "",
-    zona: filters.zona || "" */
-  }); 
-
-  fetch(`/api/listarskuposicion?${params}`)
-    .then(res => res.json())
-    .then(data => {
-      setSkus(data.content);
-      setTotalPages(data.totalPages);
-    });
-}, [page, size, filters]);
-
-
-
-   const mostrarMensaje  = (texto :string, tipo: TipoMensaje = "success") => {
-   // setMensaje(texto);
-   // setTipo(tipo);
-   // setVisible(true);
-
-      // Ocultar después de 3 segundos
-    setTimeout(() => {
-     // setVisible(false);
-      // limpiar el mensaje luego de la animación
-    //  setTimeout(() => setMensaje(null), 500);
-    }, 3000);
+  interface skuitem {
+    sku: string;
+    perfil: string;
+    familia: string;
+    posicion: string;
+    encargado: string;
+    cantidad: number;
+    estado: string;
   }
 
+  const fetchData = () => {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+      sku: filters.sku || "",
+      estado: filters.estado || "",
+      zona: filters.zona || ""
+    });
 
+    fetch(`http://localhost:8090/skuposicion/listarskuposicion?${params}`,{
+       headers: {
+          Authorization: `Bearer ${token}`,
+        }
+    })
+      .then(async res => {
+        const text = await res.text();
+        return text ? JSON.parse(text) : { content: [], totalPages: 0 };
+      })
+      .then(data => {
+        setSkus(data.content || []);
+        setTotalPages(data.totalPages || 0);
+      })
+      .catch(err => console.error("Error al obtener SKUs:", err));
+  };
 
+  useEffect(() => {
+    fetchData(); // carga inicial y cuando cambian page/size
+  }, [page, size]);
 
+  // Refrescar datos al aplicar filtros
+  const aplicarFiltros = () => {
+    setPage(0); // resetear página al filtrar
+    fetchData();
+  };
 
- if(!token){
-      mostrarMensaje(errorauth, 'error')
-      return
-    }
+  const mostrarMensaje = (texto: string, tipo: TipoMensaje = "success") => {
+    setMensaje(texto);
+    setTipo(tipo);
+    setVisible(true);
 
+    setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => setMensaje(null), 500);
+    }, 3000);
+  };
 
-  const volverhome = () => {
-  navigate('/Home')
-}
+  if (!token) {
+    mostrarMensaje(errorauth, 'error');
+    return null; // Evitar render si no hay token
+  }
 
- /*const  
+  const volverhome = () => navigate('/Home');
 
-  const response  =  await fetch(url,{
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-    */
 
     return(
         <div className="dark:bg-background-dark bg-background-light font-display">
@@ -98,7 +108,7 @@ useEffect(() => {
   >
     <option value="">Todos los estados</option>
     <option value="ALMACENADO">ALMACENADO</option>
-    <option value="PENDIENTE">PENDIENTE</option>
+    <option value="NO_ALMACENADO">NO ALMACENADO</option>
   </select>
 
   <input
@@ -108,6 +118,13 @@ useEffect(() => {
     onChange={(e) => setFilters({ ...filters, zona: e.target.value })}
     className="border rounded px-2 py-1"
   />
+  {/* 👇 BOTÓN DE FILTRO */}
+            <button
+              onClick={fetchData}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-1 rounded"
+            >
+              Filtrar
+            </button>
 </div>
 
       <table className="min-w-full divide-y divide-white/20 text-white">
@@ -120,14 +137,14 @@ useEffect(() => {
     </tr>
   </thead>
   <tbody>
-   {/* {skus.map((item, index) => (
+    {skus.map((item, index) => (
       <tr key={index}>
         <td className="px-4 py-2">{item.sku}</td>
         <td className="px-4 py-2">{item.estado}</td>
-        <td className="px-4 py-2">{item.zona}</td>
-        <td className="px-4 py-2">{item.categoria}</td> 
+        <td className="px-4 py-2">{item.posicion}</td>
+        <td className="px-4 py-2">{item.familia}</td> 
       </tr>
-    ))} */}
+    ))} 
   </tbody>
 </table>
          <button onClick={volverhome} className="w-full bg-transparent border border-black/20 dark:border-white/20 text-black dark:text-white rounded-lg h-12 text-center font-bold hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
