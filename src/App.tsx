@@ -20,7 +20,7 @@ const AppContent: React.FC = () => {
      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/locationskus" replace />} />
         <Route path="/uploadFile" element={<UploadFile />} />
         <Route path="/locationskus" element={<LocationSkus />} />
         <Route path="/storeproducts" element={<StoreProducts />} />
