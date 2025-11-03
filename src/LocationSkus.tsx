@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 function LocationSkus() {
- 
+  
+
+  //https://app.netlify.com/projects/classy-beignet-9f1633/deploys/6904df90524ee881b398405e
   //METODO PARA MENSAJES
    type TipoMensaje = "success" | "error" | "warning";
    const errorauth = "Autenticación no válida. Vuelve a iniciar sesión para continuar."
@@ -52,7 +54,7 @@ const [familia, setFamilia] = useState<string>("")
 const [posicion, setPosicion] = useState<string>("")
 const [process_id, setProcess] = useState<Number>(0)
 const [estado, setEstado] = useState<string>("")
-
+const[codigobarra, setcodigobarra] = useState<string>("")
 const [error, setError] = useState<string | null>(null)
 
 useEffect(()=> {
@@ -71,7 +73,16 @@ useEffect(()=> {
 }, [datarecibida])
 
 const botonconfirmar = ()  => {
+  
+   if(posicion.trim() !== codigobarra.trim()){
+       
+        mostrarMensaje('Este sku NO pertenece a esta posición', 'warning')
+        code == null
+        return
 
+    }
+    else {
+   
   if(estado === 'ALMACENADO'){
     mostrarMensaje('El SKU YA SE ENCUENTRA ALMACENADO', 'warning')
   }
@@ -83,6 +94,7 @@ const botonconfirmar = ()  => {
       setMensaje("La ubicación es incorrecta para este SKU")
     } */
   }
+}
 
 }
 
@@ -90,11 +102,11 @@ const botonconfirmar = ()  => {
  const token = localStorage.getItem('token');
 
 const almacenarsku = async() => {
-
+    
  
     url = `http://localhost:8090/skuposicion/actualizarestadoSKUALMACEN/${encodeURIComponent(sku)}`
     try {
-
+        
         const response  =  await fetch(url,{
           method: 'PUT',
           headers: {
@@ -139,7 +151,8 @@ if(!input) return;
 const handleChange = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const code = target.value.trim()
-  console.log("codigo escaneado:", code);
+  setcodigobarra(code)
+  
 
   // Aquí puedes enviar el código a tu backend
       // fetch("/api/codigo", { method: "POST", body: JSON.stringify({ code }) });
@@ -160,13 +173,59 @@ const handleChange = (e: Event) => {
     };
   }, []);
 
+  const leftNumbers = Array.from({ length: 21 }, (_, i) => 41 - i * 2).reverse();
+  const rightNumbers = Array.from({ length: 21 }, (_, i) => 42 - i * 2).reverse();
+
+const renderCheckboxRow = (num: number, align: "left" | "right") => (
+  <div
+    key={num}
+    className={`flex justify-${
+      align === "left" ? "end" : "start"
+    } py-1`} // ← menos espacio vertical
+  >
+    {align === "left" ? (
+      <>
+        <div className="flex gap-x-2"> {/* ← menos separación horizontal */}
+          {[...Array(3)].map((_, i) => (
+            <input
+              key={i}
+              type="checkbox"
+              className="h-5 w-5 rounded border-2 border-zinc-400 bg-transparent text-primary checked:border-primary checked:bg-primary focus:border-primary focus:ring-0 dark:border-[#324467]"
+            />
+          ))}
+        </div>
+        <p className="w-6 pl-2 text-left text-sm font-normal text-zinc-900 dark:text-white">
+          {num}
+        </p>
+      </>
+    ) : (
+      <>
+        <p className="w-6 pr-2 text-right text-sm font-normal text-zinc-900 dark:text-white">
+          {num}
+        </p>
+        <div className="flex gap-x-2">
+          {[...Array(3)].map((_, i) => (
+            <input
+              key={i}
+              type="checkbox"
+              className="h-5 w-5 rounded border-2 border-zinc-400 bg-transparent text-primary checked:border-primary checked:bg-primary focus:border-primary focus:ring-0 dark:border-[#324467]"
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+);
   return (
    
 <div className="dark:bg-background-dark bg-background-light font-display flex justify-center items-center min-h-screen">
 <div className="flex items-center justify-center min-h-screen">
-<main className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 max-w-6xl w-full">
+<main className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 pt-2 max-w-6xl w-full">
+
+
 <div className="flex flex-col items-center justify-center bg-background-dark/50 dark:bg-background-light/5 p-6 rounded-lg">
-<div className="w-full aspect-video bg-cover bg-center rounded-lg flex items-center justify-center">
+<div className="w-full max-h-32 bg-cover bg-center rounded-lg flex items-center justify-center overflow-hidden">
+
 </div>
  {/* Mensaje tipo toast */}
           {mensaje && (
@@ -235,9 +294,28 @@ const handleChange = (e: Event) => {
     <span>{mensaje}</span>
   </div>
 )}
-<div className="text-center mt-4">
-<h2 className="text-xl font-bold text-black dark:text-white">Previsualización del Producto</h2>
-<p className="text-black/60 dark:text-white/60">Datos del producto o previsualización aquí.</p>
+<div>
+  
+        <div className="relative grid grid-cols-[1fr_min-content_1fr] items-center justify-center gap-x-1">
+
+          {/* Texto vertical central */}
+          <div className="col-start-2 row-start-1 flex h-full items-center">
+            <h2 className="writing-mode-v-rl -rotate-90 transform select-none text-2xl font-extrabold tracking-[0.2em] text-zinc-300 dark:text-zinc-700">
+              CLL07
+            </h2>
+          </div>
+
+          {/* Columna izquierda */}
+          <div className="col-start-1 row-start-1 flex flex-col-reverse ">
+            {leftNumbers.map((n) => renderCheckboxRow(n, "left"))}
+          </div>
+
+          {/* Columna derecha */}
+          <div className="col-start-3 row-start-1 flex flex-col-reverse">
+            {rightNumbers.map((n) => renderCheckboxRow(n, "right"))}
+          </div>
+        </div>
+      
 </div>
 </div>
 <div className="flex flex-col justify-center space-y-6">
