@@ -38,7 +38,8 @@ function LocationSkus() {
      familia : string,
      posicion : string,
      process_id : number,
-     estado : string
+     estado : string,
+     nombreencargado : string
       }
 
 
@@ -54,6 +55,7 @@ const [familia, setFamilia] = useState<string>("")
 const [posicion, setPosicion] = useState<string>("")
 const [process_id, setProcess] = useState<Number>(0)
 const [estado, setEstado] = useState<string>("")
+const [nombreencargado, setNombreencargado] = useState<string>("")
 const[codigobarra, setcodigobarra] = useState<string>("")
 const [error, setError] = useState<string | null>(null)
 
@@ -69,10 +71,16 @@ useEffect(()=> {
     setPosicion(datarecibida.posicion)
     setProcess(datarecibida.process_id)
     setEstado(datarecibida.estado)
+    setNombreencargado(datarecibida.nombreencargado)
   }
 }, [datarecibida])
 
 const botonconfirmar = ()  => {
+
+   if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+     }
   
    if(posicion.trim() !== codigobarra.trim()){
        
@@ -88,6 +96,7 @@ const botonconfirmar = ()  => {
   }
   else{
    // if(posicion === code){
+     setEstado("ALMACENADO")
      almacenarsku();
  /*   }
     else {
@@ -102,8 +111,12 @@ const botonconfirmar = ()  => {
  const token = localStorage.getItem('token');
 
 const almacenarsku = async() => {
+
+   if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+     }
     
- 
     url = `http://localhost:8090/skuposicion/actualizarestadoSKUALMACEN/${encodeURIComponent(sku)}`
     try {
         
@@ -135,6 +148,10 @@ const almacenarsku = async() => {
 }
 
 const volverhome = () => {
+   if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+     }
   navigate('/Home')
 }
 
@@ -175,47 +192,84 @@ const handleChange = (e: Event) => {
 
   const leftNumbers = Array.from({ length: 21 }, (_, i) => 41 - i * 2).reverse();
   const rightNumbers = Array.from({ length: 21 }, (_, i) => 42 - i * 2).reverse();
+  
 
-const renderCheckboxRow = (num: number, align: "left" | "right") => (
-  <div
-    key={num}
-    className={`flex justify-${
-      align === "left" ? "end" : "start"
-    } py-1`} // ← menos espacio vertical
-  >
-    {align === "left" ? (
-      <>
-        <div className="flex gap-x-2"> {/* ← menos separación horizontal */}
-          {[...Array(3)].map((_, i) => (
-            <input
-              key={i}
-              type="checkbox"
-              className="h-5 w-5 rounded border-2 border-zinc-400 bg-transparent text-primary checked:border-primary checked:bg-primary focus:border-primary focus:ring-0 dark:border-[#324467]"
-            />
-          ))}
-        </div>
-        <p className="w-6 pl-2 text-left text-sm font-normal text-zinc-900 dark:text-white">
-          {num}
-        </p>
-      </>
-    ) : (
-      <>
-        <p className="w-6 pr-2 text-right text-sm font-normal text-zinc-900 dark:text-white">
-          {num}
-        </p>
+const renderCheckboxRow = (num: number, align: "left" | "right") => {
+  const parte = posicion.split(".")
+  const fila = Number(parte[parte.length -2]); // fila de la posición
+  let indiceCheckbox = Number(parte[parte.length -1]) -1; // checkbox correcto
+  let par = Number(parte[parte.length-2]);
+
+  if (parte.length >= 4 && parte[parte.length - 4].length >= 3) {
+  let piso = Number(parte[parte.length - 4].substring(2, 3));
+  console.log(piso);
+} else {
+  console.warn('El formato de "parte" no es válido:', parte);
+}
+ 
+  
+  if(par % 2 !== 0){
+  switch(indiceCheckbox ){
+    case 2: 
+    indiceCheckbox = 0;
+    break
+    case 1:
+     indiceCheckbox = 1;
+     break
+    case 0:
+     indiceCheckbox = 2;
+     break
+     default:
+     console.warn("Indice fuera de rango ", indiceCheckbox)
+  }
+  }
+
+  return (
+    <div key={num} className={`flex justify-${align === "left" ? "end" : "start"} py-1`}>
+      {align === "left" ? (
         <div className="flex gap-x-2">
-          {[...Array(3)].map((_, i) => (
-            <input
+          {[...Array(3)].map((_, i) => {
+          const isChecked = i === indiceCheckbox && num === fila;
+            return (
+               <div
               key={i}
-              type="checkbox"
-              className="h-5 w-5 rounded border-2 border-zinc-400 bg-transparent text-primary checked:border-primary checked:bg-primary focus:border-primary focus:ring-0 dark:border-[#324467]"
-            />
-          ))}
+              className={`w-5 h-5 rounded flex items-center justify-center border-2
+                ${isChecked ? "bg-green-500 border-green-500" : "bg-transparent border-zinc-400"}`}
+            >
+              {isChecked && <div className="w-3 h-3 bg-green rounded-sm"></div>}
+            </div>
+            );
+          })}
+          <p className={`w-6  text-sm font-normal text-zinc-900 dark:text-white`}>
+        {num}
+      </p>
         </div>
-      </>
-    )}
-  </div>
-);
+        
+      ) : (
+        <div className="flex gap-x-2" >
+          <p className={`w-6 text-sm font-normal text-zinc-900 dark:text-white`}>
+        {num}
+      </p>
+          {[...Array(3)].map((_, i) => {
+            const isChecked = i === indiceCheckbox && num === fila;
+            return (
+                <div
+              key={i}
+              className={`w-5 h-5 rounded flex items-center justify-center border-2
+                ${isChecked ? "bg-green-500 border-green-500" : "bg-transparent border-zinc-400"}`}
+            >
+              {isChecked && <div className="w-3 h-3 bg-green rounded-sm"></div>}
+            </div>
+
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
   return (
    
 <div className="dark:bg-background-dark bg-background-light font-display flex justify-center items-center min-h-screen">
@@ -301,7 +355,7 @@ const renderCheckboxRow = (num: number, align: "left" | "right") => (
           {/* Texto vertical central */}
           <div className="col-start-2 row-start-1 flex h-full items-center">
             <h2 className="writing-mode-v-rl -rotate-90 transform select-none text-2xl font-extrabold tracking-[0.2em] text-zinc-300 dark:text-zinc-700">
-              CLL07
+            PISO{posicion.substring(6,7)}  CALLE{posicion.substring(10,11)}
             </h2>
           </div>
 
@@ -322,10 +376,10 @@ const renderCheckboxRow = (num: number, align: "left" | "right") => (
 <div className="space-y-4">
 <p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">SKU: {sku}</p>
 <p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">PERFIL: {perfil}</p>
-<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" >ENCARGADO: {encargado}</p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" >ENCARGADO: {nombreencargado}</p>
 <p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">CANTIDAD: {cantidad.toString()} </p>
 <p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">FAMILIA: {familia}</p>
-<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">POSICION: {posicion} </p>
+<p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">UBICACIÓN: {posicion} </p>
 <p className="w-full bg-background-light dark:bg-background-dark border border-black/20 dark:border-white/20 rounded-lg h-12 px-4 flex items-center text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary">ESTADO: {estado} </p>
  <input ref={inputRef} type="text" placeholder="Escanee el código aquí" autoFocus />
 </div>

@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useState, FormEvent } from 'react';
 
 const Navbar: React.FC = () => {
+
+ const [nombreapellido, setnombreapellido] = useState<string>('');
+  const [username , setUsername] = useState<string>('');
+    useEffect(() =>{
+      const variable = localStorage.getItem("nombreapellido")
+      const variable2 = localStorage.getItem("username")
+      if(variable && variable2){
+        setnombreapellido(variable)
+        setUsername(variable2)
+      }
+    })
 
 
 const handleLogout =  async () => {
 
     const token = localStorage.getItem("token")
+   
+     
     const url: string = "http://localhost:8090/auth/logout"
 
     if(token) {
@@ -36,7 +50,7 @@ localStorage.removeItem("token");
       backgroundColor: "#1e1e2f",
       color: "white"
     }}>
-      <h2>My APP</h2>
+      <h2>USUARIO: {username} {nombreapellido}</h2>
       <button
         onClick={handleLogout}
         style={{

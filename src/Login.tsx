@@ -6,6 +6,7 @@ interface LoginResponse {
   token: string;
   rol: string;
   username: string;
+  nombreapellido: string;
 }
 
 function Login() {
@@ -54,18 +55,23 @@ function Login() {
         const token = datos.token;
         const rol = datos.rol;
         const username = datos.username;
+        const nombreapellido= datos.nombreapellido;
 
         localStorage.setItem('token', token);
         console.log('Login exitoso:', datos);
        
         if( rol === 'ADMIN'){
             localStorage.setItem('rol', 'ADMIN');
+            localStorage.setItem('username', username)
+            localStorage.setItem('nombreapellido', nombreapellido)
             navigate('/home');
            
         }else {
            localStorage.setItem('rol', 'USER');
+           localStorage.setItem('username', username)
+           localStorage.setItem('nombreapellido', nombreapellido)
             navigate('/home')
-
+           
         }
         mostrarMensaje('Bienvenido', 'success')
       } else {

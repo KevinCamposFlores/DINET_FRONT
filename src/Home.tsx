@@ -32,12 +32,17 @@ function Home(){
      familia : string,
      posicion : string,
      process_id : number,
-     estado : string
+     estado : string,
+     nombreencargado : string
       }
- 
+     
+     
+      
+
     let url : string = '';
      const token = localStorage.getItem('token');
      const rol = localStorage.getItem('rol');
+     const usename = localStorage.getItem('username');
 
     const [sku, setSku] = useState<string>('');
     const navigate = useNavigate();
@@ -45,8 +50,15 @@ function Home(){
     const [error, setError] = useState<string | null>(null)
 
     const navigatelocationskus = async() => {
+   
+     const params = new URLSearchParams({
+  sku: sku,
+  username: usename ?? ''
+});
+
+
     //url =  `http://localhost:8090/skuposicion/almacenarSku${encodeURIComponent(sku)}`
-      url =  `http://localhost:8090/skuposicion/almacenarSku/${encodeURIComponent(sku)}`
+      url =  `http://localhost:8090/skuposicion/almacenarSku?${params}`
       
        
      if(!token){
