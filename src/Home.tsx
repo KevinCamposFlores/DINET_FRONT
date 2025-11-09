@@ -1,4 +1,4 @@
-import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState } from "react";
+import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState, useRef, useEffect } from "react";
 import { data, useNavigate } from "react-router-dom";
 
 function Home(){
@@ -32,12 +32,17 @@ function Home(){
      familia : string,
      posicion : string,
      process_id : number,
-     estado : string
+     estado : string,
+     nombreencargado : string
       }
- 
+     
+     
+      
+
     let url : string = '';
      const token = localStorage.getItem('token');
      const rol = localStorage.getItem('rol');
+     const usename = localStorage.getItem('username');
 
     const [sku, setSku] = useState<string>('');
     const navigate = useNavigate();
@@ -45,8 +50,15 @@ function Home(){
     const [error, setError] = useState<string | null>(null)
 
     const navigatelocationskus = async() => {
+   
+     const params = new URLSearchParams({
+  sku: sku,
+  username: usename ?? ''
+});
+
+
     //url =  `http://localhost:8090/skuposicion/almacenarSku${encodeURIComponent(sku)}`
-      url =  `http://localhost:8090/skuposicion/almacenarSku/${encodeURIComponent(sku)}`
+      url =  `http://localhost:8090/skuposicion/almacenarSku?${params}`
       
        
      if(!token){
@@ -119,6 +131,39 @@ function Home(){
     }
       navigate("/StoreProducts")
     }
+
+    //INPUT PARA EL SCANEO DEL QR
+    
+    const inputRef = useRef<HTMLInputElement>(null)
+    const code : string = ('')
+    
+    useEffect(() => {
+    const input = inputRef.current;
+    if(!input) return;
+    
+    const handleChange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const code = target.value.trim()
+      console.log("codigo escaneado:", code);
+    
+      // Aquí puedes enviar el código a tu backend
+          // fetch("/api/codigo", { method: "POST", body: JSON.stringify({ code }) });
+    
+          // Limpiar el input y mantener el foco
+    
+           target.value = "";
+          input.focus();
+    }
+    
+       input.addEventListener("change", handleChange);
+    
+        // Mantener el foco inicial
+        input.focus();
+    
+        return () => {
+          input.removeEventListener("change", handleChange);
+        };
+      }, []);
 
     return  (
   
@@ -193,21 +238,19 @@ function Home(){
   </div>
 )}
      
-     
       <div className="w-full max-w-lg space-y-8">
         
         <div className="space-y-2">
           <label className="text-sm font-medium text-white/80" htmlFor="sku">
             SKU:
           </label>
-          <input
-            id="sku"
-            type="text"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            placeholder="Enter SKU"
-            className="w-full bg-background-dark border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          />
+          <input ref={inputRef} 
+           type="text"
+           id="sku"
+           onChange={(e) => setSku(e.target.value)}
+           placeholder="Enter SKU"
+           className="w-full bg-background-dark border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+           autoFocus />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

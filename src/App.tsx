@@ -7,6 +7,7 @@ import StoreProducts from "./StoreProducts";
 import Home from "./Home";
 import StoreReport from "./StoreReport";
 import Navbar from "./Navbar";
+import { Navigate } from "react-router-dom";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -19,7 +20,7 @@ const AppContent: React.FC = () => {
      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<h1>Página principal</h1>} />
+        <Route path="/" element={<Navigate to="/locationskus" replace />} />
         <Route path="/uploadFile" element={<UploadFile />} />
         <Route path="/locationskus" element={<LocationSkus />} />
         <Route path="/storeproducts" element={<StoreProducts />} />
