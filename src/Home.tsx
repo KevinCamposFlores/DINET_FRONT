@@ -1,4 +1,4 @@
-import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState, useRef, useEffect } from "react";
+import {  useState, useRef, useEffect } from "react";
 import { data, useNavigate } from "react-router-dom";
 
 function Home(){
@@ -114,7 +114,14 @@ function Home(){
     else {
        navigate("/uploadFile")
     }
-  }
+  } 
+    const navigateReceptionSkus = () => {
+       if(!token){
+      mostrarMensaje(errorauth, 'error')
+      return
+    }
+    navigate("/ReceptionSkus")
+    }
     
     const navigatestorereport = () => {
     if(!token){
@@ -261,9 +268,11 @@ function Home(){
             REPORTE DE ALMACENAJE
           </button>
         </div>
-
+         
+         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <button onClick={navigateUploadFile} className="w-full btn btn-secondary">CARGAR ARCHIVOS</button>
-
+        <button onClick={navigateReceptionSkus} className="w-full btn btn-secondary">Recepcion SKUS</button>
+         </div>
          {error && (
       <p className="text-center text-sm text-gray-700 bg-gray-100 rounded-md py-2">
         {error}

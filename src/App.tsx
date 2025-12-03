@@ -6,6 +6,7 @@ import LocationSkus from "./LocationSkus";
 import StoreProducts from "./StoreProducts";
 import Home from "./Home";
 import StoreReport from "./StoreReport";
+import ReceptionSkus from "./ReceptionSkus";
 import Navbar from "./Navbar";
 import { Navigate } from "react-router-dom";
 
@@ -20,12 +21,13 @@ const AppContent: React.FC = () => {
      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/locationskus" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/uploadFile" element={<UploadFile />} />
         <Route path="/locationskus" element={<LocationSkus />} />
         <Route path="/storeproducts" element={<StoreProducts />} />
         <Route path="/storereport" element={<StoreReport />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/ReceptionSkus" element={<ReceptionSkus />} />
       </Routes>
     </>
   );

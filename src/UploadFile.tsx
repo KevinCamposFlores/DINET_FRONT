@@ -51,7 +51,7 @@ function UploadFiles() {
     }
 
     try{   
-  //setMensaje(`Procesando Ubicaciones...`);
+  setMensaje(`Procesando Ubicaciones...`);
   mostrarMensaje(`Procesando Ubicaciones...`, 'success')
 
 
@@ -69,7 +69,7 @@ function UploadFiles() {
       }); 
 
       const data = await response.json();
-     // setMensaje(`✅ Ubicaciones Procesadas correctamente`);
+      setMensaje(`✅ Ubicaciones Procesadas correctamente`);
       console.log('Token',token)
       console.log('Respuesta', data)
       mostrarMensaje(`✅ Proceso Finalizado: ${data.message}`, 'success')
@@ -96,7 +96,7 @@ function UploadFiles() {
       setVisible(false);
       // limpiar el mensaje luego de la animación
       setTimeout(() => setMensaje(null), 500);
-    }, 3000);
+    }, 5000);
   }
 
  
@@ -152,10 +152,9 @@ function UploadFiles() {
           mostrarMensaje(`❌ Error al subir el archivo ${index + 1}: ${data.error || data.message} `, 'error')
         return
         } 
-        console.log('Token',token)
-        console.log('Respuesta', data)
-        mostrarMensaje(`✅ Archivo ${index + 1} subido con éxito: ${data.message}`, 'success')
-      // setMensaje(`✅ Archivo ${index + 1} subido con éxito!`);
+       
+        mostrarMensaje(`✅ Archivo subido con éxito: ${data.message}`, 'success')
+        setMensaje(`✅ Archivo  subido con éxito!`);
 
       // Habilitar siguiente input si no es el último
       if (index < 4) {
@@ -165,8 +164,9 @@ function UploadFiles() {
       }
     } catch (err) {
       const error = err as Error;
-      mostrarMensaje(`❌ Error al subir archivo ${index + 1}: ${error.message}`, 'error')
-     // setMensaje(`❌ Error al subir archivo ${index + 1}: ${error.message}`);
+      mostrarMensaje(`❌ Error al subir archivo: ${error.message}`, 'error')
+      setMensaje(`❌ Error al subir archivo : ${error.message}`);
+      console.log(`❌ Error al subir archivo: ${error.message}`)
     }
   };
 
@@ -175,68 +175,68 @@ function UploadFiles() {
    <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center dark:bg-background-dark  bg-background-light border-white/20 dark:border-white/10 rounded-xl shadow-lg">
   <div className="w-full max-w-md space-y-6 dark:bg-background-dark shadow-md rounded-lg p-6  bg-background-light border-white/20 dark:border-white/10 rounded-xl shadow-lg">
    
-   {/* Mensaje tipo toast */}
-          {mensaje && (
-  <div
-    className={`fixed top-5 right-5 flex items-center gap-3 px-5 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-500 ease-in-out
-      ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
-      ${
-        tipo === "success"
-          ? "bg-green-500"
-          : tipo === "error"
-          ? "bg-red-500"
-          : "bg-yellow-500"
-      }`}
-  >
-    {/* Ícono */}
-    {tipo === "success" && (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2}
-        stroke="white"
-        className="w-6 h-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4 8l8 6 8-6M4 8v8a2 2 0 002 2h12a2 2 0 002-2V8m-16 0l8 6 8-6"
-        />
-      </svg>
-    )}
-    {tipo === "error" && (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2}
-        stroke="white"
-        className="w-6 h-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 18L18 6M6 6l12 12"
-        />
-      </svg>
-    )}
-    {tipo === "warning" && (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2}
-        stroke="white"
-        className="w-6 h-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 9v2m0 4h.01M12 19a7 7 0 100-14 7 7 0 000 14z"
-        />
-      </svg>
-    )}
+    {/* Mensaje tipo toast */}
+            {mensaje && (
+    <div
+      className={`fixed top-5 right-5 flex items-center gap-3 px-5 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-500 ease-in-out
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
+        ${
+          tipo === "success"
+            ? "bg-green-500"
+            : tipo === "error"
+            ? "bg-red-500"
+            : "bg-yellow-500"
+        }`}
+    >
+      {/* Ícono */}
+      {tipo === "success" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="white"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 8l8 6 8-6M4 8v8a2 2 0 002 2h12a2 2 0 002-2V8m-16 0l8 6 8-6"
+          />
+        </svg>
+      )}
+      {tipo === "error" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="white"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      )}
+      {tipo === "warning" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="white"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v2m0 4h.01M12 19a7 7 0 100-14 7 7 0 000 14z"
+          />
+        </svg>
+      )}
 
     {/* Mensaje */}
     <span>{mensaje}</span>
@@ -362,7 +362,7 @@ function UploadFiles() {
         Subir Archivo
       </button>
     </div>
-
+    {mensaje}
     {/* Procesar */}
     <div className="flex flex-col space-y-3">
       <button

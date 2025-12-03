@@ -37,20 +37,21 @@ function Login() {
   const togglePasswordVisibility = () => {
     setMostrarPassword(!mostrarPassword);
   };
-
+  
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const respuesta = await fetch('http://localhost:8090/auth/login', {
+  //http://localhost:8090/auth/login
+  //http://192.168.18.231:8090/auth/login
+  try {
+      const respuesta = await fetch('http://172.16.140.16:8090/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ username, password })
       });
-
-      if (respuesta.ok) {
+  
+   if (respuesta.ok) {
         const datos: LoginResponse = await respuesta.json();
         const token = datos.token;
         const rol = datos.rol;
