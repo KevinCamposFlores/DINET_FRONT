@@ -82,7 +82,7 @@ function Login() {
       }
     } catch (err) {
       const error = err as Error; // Forzamos a que `err` sea del tipo `Error`
-       mostrarMensaje(`Error de red: ${error.message}`, 'error')
+       mostrarMensaje(`Error de red: ${"aqui es el error"+ error.message}`, 'error')
     
     }
   };
